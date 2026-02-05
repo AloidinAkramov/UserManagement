@@ -1,0 +1,96 @@
+﻿@model List<UserManagement.Models.User>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2>Users</h2>
+
+<form method="post" id="bulkForm">
+    <!-- TOOLBAR -->
+    <div class="mb-3">
+        <button formaction="/Users/Block" class="btn btn-warning">
+            Block
+        </button>
+
+        <button formaction="/Users/Unblock" class="btn btn-success">
+            Unblock
+        </button>
+
+        <button formaction="/Users/Delete" class="btn btn-danger"
+                onclick="return confirm('Are you sure you want to delete selected users?')">
+            Delete
+        </button>
+
+        <button formaction="/Users/DeleteUnverified" class="btn btn-secondary"
+                onclick="return confirm('Delete ALL unverified users?')">
+            Delete unverified
+        </button>
+    </div>
+</form>
+
+    <!-- USERS TABLE -->
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="selectAll" />
+                </th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Last login</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="ids" value="@user.Id" form="bulkForm" />
+                    </td>
+                    <td>@user.Name</td>
+                    <td>@user.Email</td>
+                    <td>
+                        @user.Status
+
+                        @if (user.Status == UserStatus.Unverified)
+                        {
+                            <!-- CONFIRM ALOHIDA FORM -->
+                            <form action="/Users/Confirm"
+                                  method="post"
+                                  style="display:inline">
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-primary ms-2">
+                                    Click to verify
+                                </button>
+                            </form>
+                        }
+                    </td>
+                    <td>@user.CreatedAt</td>
+                    <td class="last-login" data-date="@user.LastLoginAt?.ToString("o")">
+                        Loading...
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+<script>
+    document.getElementById("selectAll").addEventListener("change", function () {
+        document.querySelectorAll("input[name='ids']")
+            .forEach(cb => cb.checked = this.checked);
+    });
+</script>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".last-login").forEach(el => {
+                el.innerText = timeAgo(el.dataset.date);
+            });
+        });
+    </script>
+}
