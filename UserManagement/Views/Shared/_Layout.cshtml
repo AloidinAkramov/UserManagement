@@ -44,13 +44,12 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <!-- GLOBAL FUNCTION -->
     <script>
         function timeAgo(dateString) {
             if (!dateString) return "Never";
 
             const now = new Date();
-            const past = new Date(dateString);
+            const past = new Date(dateString + "Z");
             const seconds = Math.floor((now - past) / 1000);
 
             if (seconds < 60) return `${seconds} seconds ago`;
