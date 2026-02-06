@@ -43,12 +43,20 @@ You can test:
 
 ### 1️⃣ Database Configuration (Microsoft SQL Server)
 
-The application uses a **remotely hosted Microsoft SQL Server (SQL Server 2025)** database.  
-This setup reflects a real production-like environment instead of a local-only database.
+The application uses a **remotely hosted Microsoft SQL Server** database.
+This setup reflects a production-like environment rather than a local-only database.
 
-- Remote SQL Server hosting  
-- Secure connection string  
-- EF Core integration
+- Remote SQL Server hosting
+- Secure connection string
+- Entity Framework Core integration
+
+ ### 🔐 Unique Email Constraint (Database Level)
+
+Email uniqueness is enforced by a **UNIQUE INDEX** on the `Email` column.
+Duplicate emails are rejected directly by the database.
+
+<img width="1915" height="1119" alt="image" src="https://github.com/user-attachments/assets/caab2e8c-6c1c-4d1f-955e-946de2ea9766" />
+
   
 ---
 
