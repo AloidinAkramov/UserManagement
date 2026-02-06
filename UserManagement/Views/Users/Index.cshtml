@@ -7,7 +7,6 @@
 <h2>Users</h2>
 
 <form method="post" id="bulkForm">
-    <!-- TOOLBAR -->
     <div class="mb-3">
         <button formaction="/Users/Block" class="btn btn-warning">
             Block
@@ -29,7 +28,6 @@
     </div>
 </form>
 
-    <!-- USERS TABLE -->
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -57,7 +55,6 @@
 
                         @if (user.Status == UserStatus.Unverified)
                         {
-                            <!-- CONFIRM ALOHIDA FORM -->
                             <form action="/Users/Confirm"
                                   method="post"
                                   style="display:inline">
