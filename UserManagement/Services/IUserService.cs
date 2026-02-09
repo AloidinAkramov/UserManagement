@@ -11,4 +11,5 @@ public interface IUserService
     Task DeleteAsync(List<Guid> userId);
     Task DeleteUnverifiedAsync();
     Task ConfirmAsync(Guid id);
+    Task<User?> GetByIdAsync(Guid id);
 }

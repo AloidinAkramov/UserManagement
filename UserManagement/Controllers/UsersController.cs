@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UserManagement.Models;
 using UserManagement.Services;
 
 namespace UserManagement.Controllers;
@@ -17,8 +18,7 @@ public class UsersController : Controller
         // IMPORTANT:
         // Only logged-in users are allowed to see users list.
         // Authentication is handled via session.
-        var userId = HttpContext.Session.GetString("UserId");
-        if (userId == null)
+        if (!await IsLoggedInAndNotBlockedAsync())
             return RedirectToAction("Login", "Auth");
 
         var users = await userService.GetAllAsync();
@@ -30,7 +30,7 @@ public class UsersController : Controller
     {
         // NOTE:
         // Authorization check for POST actions.
-        if (!IsLoggedIn())
+        if (!await IsLoggedInAndNotBlockedAsync())
             return RedirectToAction("Login", "Auth");
 
         // NOTE:
@@ -50,7 +50,7 @@ public class UsersController : Controller
     {
         // NOTE:
         // Only authenticated users can perform this action.
-        if (!IsLoggedIn())
+        if (!await IsLoggedInAndNotBlockedAsync())
             return RedirectToAction("Login", "Auth");
 
         if (ids == null || ids.Length == 0)
@@ -69,7 +69,7 @@ public class UsersController : Controller
         // IMPORTANT:
         // Physical delete of users (not soft delete),
         // required by task description.
-        if (!IsLoggedIn())
+        if (!await IsLoggedInAndNotBlockedAsync())
             return RedirectToAction("Login", "Auth");
 
         if (ids == null || ids.Length == 0)
@@ -86,7 +86,7 @@ public class UsersController : Controller
         // IMPORTANT:
         // Deletes ALL users with Unverified status.
         // This is a toolbar action.
-        if (!IsLoggedIn())
+        if (!await IsLoggedInAndNotBlockedAsync())
             return RedirectToAction("Login", "Auth");
 
         await userService.DeleteUnverifiedAsync();
@@ -100,7 +100,7 @@ public class UsersController : Controller
         // NOTE:
         // Fake email confirmation (button-based),
         // allowed by task requirements.
-        if (!IsLoggedIn())
+        if (!await IsLoggedInAndNotBlockedAsync())
             return RedirectToAction("Login", "Auth");
 
         if (id == Guid.Empty)
@@ -111,10 +111,22 @@ public class UsersController : Controller
         return RedirectToAction("Index");
     }
 
-    private bool IsLoggedIn()
+    private async Task<bool> IsLoggedInAndNotBlockedAsync()
     {
         // NOTE:
         // Simple session-based authentication helper.
-        return HttpContext.Session.GetString("UserId") != null;
+        var userId = HttpContext.Session.GetString("UserId");
+        if (userId == null)
+            return false; 
+
+        var user = await userService.GetByIdAsync(Guid.Parse(userId));
+
+        if (user == null || user.Status == UserStatus.Blocked)
+        {
+            HttpContext.Session.Clear();
+            return false;
+        }
+
+        return true;
     }
 }

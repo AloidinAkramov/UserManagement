@@ -149,6 +149,11 @@ public class UserService : IUserService
         await context.SaveChangesAsync();
     }
 
+    public async Task<User?> GetByIdAsync(Guid id)
+    {
+        return await context.Users.FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     private static string Hash(string value)
     {
         // NOTE:
